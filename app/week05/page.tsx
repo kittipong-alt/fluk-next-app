@@ -5,12 +5,14 @@ import { handleBuildComplete } from "next/dist/build/adapter/build-complete";
 // import Footer from "../components/footer";
 
 import { useState } from "react";
-
+import ToDoForm from "./component/ToDoForm";
+import { title } from "process";
 export default function ToDoLists(){
 
     // State variadles
     const [ count, setConut ] = useState(0);
     const [Comp, setComp] = useState(null)
+    
 
     const incConut = () =>{
         setConut(count+1);
@@ -56,8 +58,8 @@ export default function ToDoLists(){
         }
     ];
 
-    const updateToDoList = [...toDoItem, ...newItems]
-
+    const updateToDoList = [...toDoItem, ...newItems];
+    const [tasks, setTasks] = useState(updateToDoList);
      const isActive = (active: boolean) => {
         if(active == true)
          return <>{role}</>;
@@ -78,7 +80,13 @@ export default function ToDoLists(){
             return item.completed == Comp
     }
     );
-    const getToDoItem = newToDoList.map((item) => {
+
+    const handleDelete = (id) => {
+        const updateTasks = tasks.filter(item => item.id != id);
+        setTasks(updateTasks);
+    }
+
+    const getToDoItem = tasks.map((item) => {
         //<li>{item}</li>
         const {id, title, completed} = item;
 
@@ -93,7 +101,8 @@ export default function ToDoLists(){
         <span className="text-sm font-medium text-gray-700">{title}</span>
         <span className="text-sm font-medium text-gray-700">สถานะ: {isCompleted(completed)}</span>
       </div>
-      <button className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <button className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+        onClick={(e) => handleDelete(id)}>
         <svg xmlns="http://w3.org" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
@@ -106,6 +115,16 @@ export default function ToDoLists(){
 
 const handleCompleted = (comp) => {
   setComp(comp);
+}
+
+const addTask=(title, completed) =>{
+    const newTask = {
+     id: newToDoList.length+1,
+     title: title,
+     completed: completed
+    };
+
+    setTasks([...tasks, newTask]);
 }
 
     return (
@@ -124,7 +143,6 @@ const handleCompleted = (comp) => {
   </div>
 </div>
 <div className="flex items-center justify-center mt-10" >
-
 <div className="text-2xl font-bold">
      {count}
 </div>
@@ -137,6 +155,8 @@ className="px-5 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg shad
 >ลดค่า</button>
 </div>
 
+<ToDoForm addTask={addTask} />
+
 <div>
     <button onClick={() =>handleCompleted(null)} className=
     "px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">ทั้งหมด</button>
@@ -144,6 +164,11 @@ className="px-5 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg shad
     "px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">ดำเนินการแล้ว</button>
     <button onClick={() =>handleCompleted(false)} className=
     "px-5 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">รอดำเนินการ</button>
+<div className="flex items-center justify-center mt-10" >
+<div className="text-2xl font-bold">
+    {tasks.length}
+    </div>
+    </div>
 </div>
         {/*
         <p>ชื่อ-สกุล: {name}</p>
