@@ -1,18 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-export default function toDoForm({ addTask }) {
+export default function toDoForm({ addTask, editingTask, updateTask, resetEditingTask }) {
 
     const [title, setTitle] = useState('');
     const [completed, setCompleted] = useState(false);
+
+    useEffect(()=>{
+    if(editingTask){
+      setTitle(editingTask.title);
+      setCompleted(editingTask.completed);
+    }else{
+      setTitle('');
+      setCompleted(false);
+    }
+    }, [editingTask]);
 
     const handleSubmit = (e) =>{
         e.preventDefault();
 
         if(!title.trim())return;
 
-        addTask(title, completed);
+        if(editingTask){
+          updateTask(
+            editingTask.id, title, completed
+          )
+        }else addTask(title, completed);
 
         setTitle("");
         setCompleted(false);
@@ -46,15 +60,16 @@ export default function toDoForm({ addTask }) {
             <span className="text-sm font-medium text-gray-700">Completed</span>
           </label>
           <label className="ms-2 mt-4 px-4 flex items-center gap-3 cursor-pointer hover:bg-gray-50 rounded-lg">
-            <input type="radio" name="completed" value='false' checked={completed === false}  
-            onChange={(e)=>setCompleted(e.target.value === 'false')}
+            <input type="radio" name="completed" value='false' 
+            checked={completed === false}  
+            onChange={(e)=>setCompleted(e.target.value === 'true')}
              className="h-4 w-4 accent-blue-600 cursor-pointer" />
             <span className="text-sm font-medium text-gray-700">Pending</span>
           </label>
         </div>
         <div className="flex mt-4 gap-2 justify-center">
           <button className="bg-blue-600 text-white px-4 py-1 rounded">
-           เพิ่มข้อมูล
+           { editingTask ? "แก้ไขข้อมูล" : "เพิ่มข้อมูล"}
           </button>
           <button className="bg-gray-600 text-white px-4 rounded" 
           onClick={handleCancel}>

@@ -6,13 +6,18 @@ import { handleBuildComplete } from "next/dist/build/adapter/build-complete";
 
 import { useState } from "react";
 import ToDoForm from "./component/ToDoForm";
+import Modal from "./component/Modal";
 import { title } from "process";
 export default function ToDoLists(){
 
     // State variadles
     const [ count, setConut ] = useState(0);
-    const [Comp, setComp] = useState(null)
-    
+    const [Comp, setComp] = useState(null);
+    const [open, setOpen] = useState(false);
+    const[selectedTask, setSelectedTask] = useState(null);
+    const[editingTask, setEditingTask] = useState(null);
+
+    const resetEditngTask = () => setEditingTask(null);
 
     const incConut = () =>{
         setConut(count+1);
@@ -84,11 +89,37 @@ export default function ToDoLists(){
     const handleDelete = (id) => {
         const updateTasks = tasks.filter(item => item.id != id);
         setTasks(updateTasks);
-    }
+    };
+
+const handleView = (task) => {
+   // alert('You choose handleView function.');
+   setSelectedTask(task);
+   setOpen(true);
+};
+
+const handleEdit = (task) => {
+   // alert(task);
+   setEditingTask(task);
+};
+
+const updateTask = (id, title, completed) => {
+setTasks(
+    (tasks) => tasks.map((t) =>
+    t.id === id ? {
+    ...t,
+    title: title,
+    completed: completed
+    } :t
+));
+setEditingTask(null);
+
+}
 
     const getToDoItem = tasks.map((item) => {
         //<li>{item}</li>
         const {id, title, completed} = item;
+
+        
 
     return (
     <li key={id}className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200 hover:shadow-sm transition-all group">
@@ -101,6 +132,15 @@ export default function ToDoLists(){
         <span className="text-sm font-medium text-gray-700">{title}</span>
         <span className="text-sm font-medium text-gray-700">สถานะ: {isCompleted(completed)}</span>
       </div>
+
+<div className="flex gap-2 mt-2">
+    {/* View */}
+    <button onClick={(e)=>handleView(item)} className="bg-green-500 text-white px-3 py-1 rounded">View</button>
+
+    {/* Edit */}
+    <button onClick={(e)=>handleEdit(item)} className="bg-yellow-500 text-white px-3 py-1 rounded">Edit</button>
+    </div>
+
       <button className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
         onClick={(e) => handleDelete(id)}>
         <svg xmlns="http://w3.org" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -155,7 +195,12 @@ className="px-5 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg shad
 >ลดค่า</button>
 </div>
 
-<ToDoForm addTask={addTask} />
+<ToDoForm 
+addTask={addTask} 
+editingTask={editingTask}
+updateTask={updateTask}
+restEditingTask={resetEditngTask}
+/>
 
 <div>
     <button onClick={() =>handleCompleted(null)} className=
@@ -182,6 +227,15 @@ className="px-5 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg shad
             {getToDoItem}
         </ul>
         </div>
+        <Modal
+open={open}
+onClose={()=>{
+    setOpen(false);
+    setSelectedTask(null);
+}}
+task={selectedTask}
+
+        />
         {/* <Footer /> */}
       </>
     );
