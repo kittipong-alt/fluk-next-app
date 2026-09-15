@@ -8,9 +8,22 @@ export default async function ShopDetail({ params}){
   // Object destructuring
   const {id} = await params;
 
-  const shop = ShopItem.find(
-    item => item.id === Number(id)
-  );
+let shop = {};
+try {
+const response = await fetch(`http://localhost:3000/shops/${id}`);
+if(response.ok){
+  shop = await response.json();
+}else{
+  console.log(`Network response ไม่ได้กรุณาตรวจสอบ (Status: ${response.ok})`);
+}
+} catch(error) {
+  console.log(`Eroo ระหว่างการดึงข้อมูลจาก URl ${error}`);
+}
+
+
+ // const shop = ShopItem.find(
+  //  item => item.id === Number(id)
+  // );
 
 return (
 <Suspense fallback={<Loading />}>
@@ -20,15 +33,18 @@ return (
       </h1>
 
       <div
-        key={shop.id} className="border rounded-lg p-4 m-4">
+        key={shop.shopId} className="border rounded-lg p-4 m-4">
         <p className="mt-4 font-semibold">
-          shop name: {shop.name}
+          shop name: {shop.shopName}
         </p>
         <p className="my-4">
-          Category: {shop.category}
+         Address: {shop.shopAddress}
         </p>
         <p className="my-4">
-         Open Status: {shop.openStatus}
+         Contact: {shop.shopContact}
+        </p>
+        <p className="my-4">
+         Open : {shop.shopOpen ? "Open" : "Closed"}
         </p>
       </div>
 
