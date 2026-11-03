@@ -8,7 +8,7 @@ export default async function ShopHome() {
    let shops = {};
 
    try {
-  const shopData = await fetch(`http://localhost:3000/shops`);
+  const shopData = await fetch(`http://localhost:3000/api/shops`);
   if (!shopData.ok){
    console.log(`Network response ไม่ได้ กรุณาตรวจสอบ API.`);
    }

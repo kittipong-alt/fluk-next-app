@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function ShopList({ data}){
 
@@ -13,6 +14,34 @@ export default function ShopList({ data}){
     return item.shopName.toLowerCase().includes(searchText);
     }
 );
+
+ // เพิ่มคำสั่งภายใน component ShopList ส่วนของ Script
+  const router = useRouter();
+
+const handleDelete = async (id) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this shop?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(
+  `http://localhost:3000/api/shops/${id}`,
+  {
+    method: "DELETE",
+  }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete Shop");
+      }
+      router.refresh();
+    } catch (error) {
+      alert(error.message);
+    }
+};
+
   return (
 <div className="max-w-3xl ma-auto p-6">
       {/* Search */}
@@ -31,19 +60,33 @@ export default function ShopList({ data}){
         <div className="mb-4 text-gray-600">
             Found {filterShop.length} shop(s)
         </div>
+
+        {/* เพิ่มปุ่มเพื่อสร้างร้านค้า โดยระบุไว้ในของส่วนการแสดงผลไปยังผู้ใช้ตำแหน่งใด ๆ */}
+<div className="flex justify-between items-center">
+  <Link href="/week08/new"
+    className="bg-green-600 text-white px-4 py-2 rounded-lg">
+    + Add New
+  </Link>
+</div>
+
         <div className="space-y-4">
         {
         /* Display shop */
         filterShop.map(shop => (
-         <div key={shop.shopId} className="border rounded-lg p-4">
+         <div key={shop.id} className="border rounded-lg p-4">
            <h2 className="font-semibold">
             {shop.shopName}
            </h2>
            <p>Open status: {shop.shopOpen}</p>
-           <Link href={`/week08/${shop.shopId}`}
+           <Link href={`/week08/${shop.id}`}
            className="inline-block mt-3 bg-blue-600 text-white px-4 py-2 rounded">
            View Detail
            </Link>
+           {/* เพิ่มปุ่มเพื่อลบร้านค้า โดยระบุไว้ในของส่วนการแสดงผลไปยังผู้ใช้ */}
+   <button onClick={(e)=>handleDelete(`${shop.id}`)}
+      className="ms-1 bg-red-500 text-white px-3 py-2 rounded">
+     Delete
+   </button>
          </div>
         ))}
         </div>

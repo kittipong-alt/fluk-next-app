@@ -10,7 +10,7 @@ export default async function ShopDetail({ params}){
 
 let shop = {};
 try {
-const response = await fetch(`http://localhost:3000/shops/${id}`);
+const response = await fetch(`http://localhost:3000/api/shops/${id}`);
 if(response.ok){
   shop = await response.json();
 }else{
@@ -24,6 +24,8 @@ if(response.ok){
  // const shop = ShopItem.find(
   //  item => item.id === Number(id)
   // );
+
+
 
 return (
 <Suspense fallback={<Loading />}>
